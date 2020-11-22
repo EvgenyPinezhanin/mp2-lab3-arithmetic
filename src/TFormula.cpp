@@ -1,46 +1,16 @@
 #include<TFormula.h>
 
-void TFormula::stringParsing(string str)
-{
-
-}
-
-TFormula::TFormula()
-{
-	outFormBool = false;
-    outFormula = "";
-    qRevPolNot = new Queue<Lexem*>;
-}
-
-TFormula::TFormula(const string& str)
-{
-	inpFormula = str;
-	outFormBool = false;
-    qRevPolNot = new Queue<Lexem*>;
-}
-
-void TFormula::init(const string& str)
-{
-	inpFormula = str;
-	outFormBool = false;
-}
-
-bool TFormula::getOutFormula(string* s)
-{
-    *s = outFormula;
-	return false;
-}
-
-void TFormula::conversToRevPolNot()
+void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
 {
     string st;
     State state = q0;
-    ICollection<Lexem*>* q = new Queue<Lexem*>;
     inpFormula += " ";
     int n = inpFormula.length();
+    char c;
+
     for (int i = 0; i < n;i++)
     {
-        char c = inpFormula[i];
+        c = inpFormula[i];
         if (state == q0)
         {
             if ((c >= '0') && (c <= '9'))
@@ -98,14 +68,18 @@ void TFormula::conversToRevPolNot()
             }
         }
     }
+}
 
+void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* qO)
+{
+    State state;
     state = q0;
     int k = 0;
-    ICollection<Lexem*>* qN = new Queue<Lexem*>;
-    while(!q->isEmpty())
+     
+    while(!qI->isEmpty())
     {
-        Lexem *l = q->pop();
-        if (q->isEmpty()) state = q2;
+        Lexem *l = qI->pop();
+        if (qI->isEmpty()) state = q2;
         if (state == q0){
             if (l->te == LP) {
                 k++;
@@ -117,7 +91,7 @@ void TFormula::conversToRevPolNot()
             if ((l->te == RP)|| (l->te == OPERATION)) {
                 throw logic_error("arithmetic_expression_is_invalid");
             }
-            qN->push(l);
+            qO->push(l);
             continue;
         }
         if (state == q1){
@@ -132,7 +106,7 @@ void TFormula::conversToRevPolNot()
             if ((l->te == LP)|| (l->te == VALUE)) {
                 throw logic_error("arithmetic_expression_is_invalid");
             }
-            qN->push(l);
+            qO->push(l);
             continue;
         }
         if (state == q2){
@@ -145,10 +119,71 @@ void TFormula::conversToRevPolNot()
             if ((l->te == LP)|| (l->te == OPERATION)) {
                 throw logic_error("arithmetic_expression_is_invalid");
             }
-            qN->push(l);
+            qO->push(l);
         }
     }
     if (k != 0)  throw logic_error("arithmetic_expression_is_invalid");
+}
+
+TFormula::TFormula()
+{
+	isReadyOutFormula = false;
+    inpFormula = "";
+    outFormula = "";
+    qRevPolNot = new Queue<Lexem*>;
+}
+
+TFormula::TFormula(const string& str)
+{
+	inpFormula = str;
+    outFormula = "";
+	isReadyOutFormula = false;
+    qRevPolNot = new Queue<Lexem*>;
+}
+
+void TFormula::init(const string& str)
+{
+	inpFormula = str;
+    outFormula = "";
+	isReadyOutFormula = false;
+    while(!qRevPolNot->isEmpty())
+    {
+        qRevPolNot->pop();
+    }
+}
+
+bool TFormula::getOutFormula(string* s)
+{
+    if (isReadyOutFormula)
+    {
+        *s = outFormula;
+        return true;
+    }
+	return false;
+}
+
+void TFormula::conversToRevPolNot()
+{
+    ICollection<Lexem*>* q = new Queue<Lexem*>;
+    LexicalAnalysis(q);
+
+    //while(!q->isEmpty())
+    //{
+    //    Lexem* l = q->pop();
+    //    cout << l->s << " " << l->te << " " << l->val << endl;
+    //}
+
+    ICollection<Lexem*>* qN = new Queue<Lexem*>;
+    SyntacticAnalysis(q, qN);
+
+    //while(!qN->isEmpty())
+    //{
+    //    Lexem* l = qN->pop();
+    //    cout << l->s << " " << l->te << " " << l->val << endl;
+    //}
+
+    State state;
+    state = q0;
 
     ICollection<Lexem*>* s = new Stack<Lexem*>;
     while (!qN->isEmpty())
@@ -228,17 +263,7 @@ void TFormula::conversToRevPolNot()
         qRevPolNot->push(l);
         outFormula += l->s;
     }
-    //while(!qRevPolNot->isEmpty())
-    //{
-    //    Lexem* l = qRevPolNot->pop();
-    //    cout << l->s << " " << l->te << " " << l->val << endl;
-    //}
-    //cout << outFormula;
-    //while(!qN->isEmpty())
-    //{
-    //    Lexem* l = qN->pop();
-    //    cout << l->s << " " << l->te << " " << l->val << endl;
-    //}
+    isReadyOutFormula = true;
 }
 
 int TFormula::calcArithmExp()
@@ -288,6 +313,5 @@ int TFormula::calcArithmExp()
         }
 
     }
-
 	return s->pop()->val;
 }

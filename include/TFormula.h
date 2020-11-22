@@ -1,4 +1,5 @@
 #pragma once
+
 #include<iostream>
 #include<cstring>
 #include<Collection.h>
@@ -17,9 +18,12 @@ struct Lexem {
 class TFormula {
 	string inpFormula;
 	string outFormula;
-	bool outFormBool;
-	 ICollection<Lexem*>* qRevPolNot;
-    void stringParsing(string str);
+	bool isReadyOutFormula;
+
+	ICollection<Lexem*>* qRevPolNot;
+
+    void LexicalAnalysis(ICollection<Lexem*>* q);
+	void SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* qO);
 public:
 	TFormula();
 	TFormula(const string& str);

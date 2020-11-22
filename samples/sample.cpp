@@ -10,6 +10,11 @@ int main()
 	TFormula f;
 	string str = "(145+22*450/(41 + 49))*(45/9)+3947";
 
+	//Queue<int> q(10);
+	//q.push(3);
+	//int &k = q.pop();
+	//cout << &k << endl;
+
 	//while (true)
 	//{
 		//getline(cin, str);

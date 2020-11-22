@@ -8,10 +8,12 @@ using namespace std;
 template <class T>
 class ICollection {
 public:
-	virtual void push(T v) = 0;
-	virtual T pop() = 0;
-	virtual bool isEmpty() = 0;
-	virtual bool isFull() = 0;
+	virtual int getSize() const = 0;
+
+	virtual void push(const T& v) = 0;
+	virtual T& pop() = 0;
+	virtual bool isEmpty() const = 0;
+	virtual bool isFull() const = 0;
 };
 
 template <class T>
@@ -20,16 +22,20 @@ class Queue: public ICollection<T> {
 	int n;
 	int last, first;
 
-	int next(int i);
+	int next(int i) const;
 public:
 	Queue(int _n = 100);
-	Queue(const Queue<T>& s);
-	Queue<T>& operator=(const Queue<T>& s);
+	Queue(const Queue<T>& q);
+	Queue<T>& operator=(const Queue<T>& q);
 
-	void push(T v);
-	T pop();
-	bool isFull();
-	bool isEmpty();
+	bool operator==(const Queue<T>& q) const;
+
+	int getSize() const;
+
+	void push(const T& v);
+	T& pop();
+	bool isFull() const;
+	bool isEmpty() const;
 };
 
 
@@ -43,15 +49,19 @@ public:
 	Stack(const Stack<T>& s);
 	Stack<T>& operator=(const Stack<T>& s);
 
-	void push(T v);
-	T pop();
-	bool isFull();
-	bool isEmpty();
+	bool operator==(const Stack<T>& q) const;
+
+	int getSize() const;
+
+	void push(const T& v);
+	T& pop();
+	bool isFull() const;
+	bool isEmpty() const;
 };
 
 
 template <class T>
-int Queue<T>::next(int i)
+int Queue<T>::next(int i) const
 {
 	return (i + 1) % n;
 }
@@ -65,7 +75,51 @@ Queue<T>::Queue(int _n) :n(_n)
 }
 
 template <class T>
-void Queue<T>::push(T v)
+Queue<T>::Queue(const Queue<T>& q)
+{
+	n = q.n;
+	first = q.first;
+	pQueue = new T[n];
+	for (int i = 0; i < n; i++)
+	{
+		pQueue[i] = q.pQueue[i];
+	}
+}
+
+template <class T>
+Queue<T>& Queue<T>::operator=(const Queue<T>& q)
+{
+	if (this == &q) return *this;
+	delete[] pQueue;
+	n = q.n;
+	first = q.first;
+	pQueue = new T[n];
+	for (int i = 0; i < n; i++)
+	{
+		pQueue[i] = q.pQueue[i];
+	}
+	return *this;
+}
+
+template <class T>
+bool Queue<T>::operator==(const Queue<T>& q) const
+{
+	if (n != q.n) return false;
+	if (this->isEmpty() && q.isEmpty()) return true;
+
+
+
+	return true;
+}
+
+template <class T>
+int Queue<T>::getSize() const
+{
+	return n;
+}
+
+template <class T>
+void Queue<T>::push(const T& v)
 {
 	if (isFull()){ throw logic_error("queue_overflow"); }
 	last = next(last);
@@ -73,22 +127,22 @@ void Queue<T>::push(T v)
 }
 
 template <class T>
-T Queue<T>::pop()
+T& Queue<T>::pop()
 {
 	if (isEmpty()) { throw logic_error("queue_is_empty"); }
-	T v = pQueue[first];
+	int tmp = first;
 	first = next(first);
-	return v;
+	return pQueue[tmp];
 }
 
 template <class T>
-bool Queue<T>::isFull()
+bool Queue<T>::isFull() const
 {
 	return next(next(last)) == first;
 }
 
 template <class T>
-bool Queue<T>::isEmpty()
+bool Queue<T>::isEmpty() const
 {
 	return next(last) == first;
 }
@@ -129,7 +183,20 @@ Stack<T>& Stack<T>::operator=(const Stack<T>& s)
 }
 
 template <class T>
-void Stack<T>::push(T v)
+bool Stack<T>::operator==(const Stack<T>& s) const
+{
+	if (n != s.n) return false;
+	return true;
+}
+
+template <class T>
+int Stack<T>::getSize() const
+{
+	return n;
+}
+
+template <class T>
+void Stack<T>::push(const T& v)
 {
 	if (isFull()) { throw logic_error("stack_overflow"); }
 	else {
@@ -139,23 +206,22 @@ void Stack<T>::push(T v)
 }
 
 template <class T>
-T Stack<T>::pop()
+T& Stack<T>::pop()
 {
 	if (isEmpty()) { throw logic_error("stack_is_empty"); }
-	T v;
-	v = pStack[top];
+	int tmp = top;
 	top--;
-	return v;
+	return pStack[tmp];
 }
 
 template <class T>
-bool Stack<T>::isFull()
+bool Stack<T>::isFull() const
 {
 	return (n - 1 == top);
 }
 
 template <class T>
-bool Stack<T>::isEmpty()
+bool Stack<T>::isEmpty() const
 {
 	return (top == -1);
 }
