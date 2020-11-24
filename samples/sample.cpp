@@ -8,23 +8,21 @@ using namespace std;
 int main()
 {
 	TFormula f;
-	string str = "(145+22*450/(41 + 49))*(45/9)+3947";
+	//string str = "(145+22*450/(41 + 49))*(45/9)+3947";
+	//string str = "(1+2*(4+25))+(45*34/(13+4))";
+	string str;
+	string strOut;
 
-	//Queue<int> q(10);
-	//q.push(3);
-	//int &k = q.pop();
-	//cout << &k << endl;
-
-	//while (true)
-	//{
-		//getline(cin, str);
+	while (true)
+	{
+		getline(cin, str);
+		if (str == "exit") break;
 		f.init(str);
 		f.conversToRevPolNot();
-		string str1;
-		f.getOutFormula(&str1);
-		cout << "Обратная польская запись: " << str1 << endl;
+		strOut = f.getOutFormula();
+		cout << "Обратная польская запись: " << strOut << endl;
 		int ans = f.calcArithmExp();
 		cout << "Ответ: " << ans << endl;
-	//}
+	}
 	return 0;
 }

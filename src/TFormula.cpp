@@ -130,19 +130,21 @@ TFormula::TFormula()
 	isReadyOutFormula = false;
     inpFormula = "";
     outFormula = "";
-    qRevPolNot = new Queue<Lexem*>;
+    qRevPolNot = new Queue<Lexem*>(maxSizeCollection);
 }
 
 TFormula::TFormula(const string& str)
 {
+    if (str.length() == 0) throw logic_error("string_length_is_zero");
 	inpFormula = str;
     outFormula = "";
 	isReadyOutFormula = false;
-    qRevPolNot = new Queue<Lexem*>;
+    qRevPolNot = new Queue<Lexem*>(maxSizeCollection);
 }
 
 void TFormula::init(const string& str)
 {
+    if (str.length() == 0) throw logic_error("string_length_is_zero");
 	inpFormula = str;
     outFormula = "";
 	isReadyOutFormula = false;
@@ -152,19 +154,21 @@ void TFormula::init(const string& str)
     }
 }
 
-bool TFormula::getOutFormula(string* s)
+const string& TFormula::getInpFormula() const
 {
-    if (isReadyOutFormula)
-    {
-        *s = outFormula;
-        return true;
-    }
-	return false;
+	return inpFormula;
+}
+
+const string& TFormula::getOutFormula() const
+{
+    if (!isReadyOutFormula) throw logic_error("the_output_formula_is_not_ready");
+	return outFormula;
 }
 
 void TFormula::conversToRevPolNot()
 {
-    ICollection<Lexem*>* q = new Queue<Lexem*>;
+    if (inpFormula.length() == 0) throw logic_error("string_is_not_initialized");
+    ICollection<Lexem*>* q = new Queue<Lexem*>(maxSizeCollection);
     LexicalAnalysis(q);
 
     //while(!q->isEmpty())
@@ -173,7 +177,7 @@ void TFormula::conversToRevPolNot()
     //    cout << l->s << " " << l->te << " " << l->val << endl;
     //}
 
-    ICollection<Lexem*>* qN = new Queue<Lexem*>;
+    ICollection<Lexem*>* qN = new Queue<Lexem*>(maxSizeCollection);
     SyntacticAnalysis(q, qN);
 
     //while(!qN->isEmpty())
@@ -185,7 +189,7 @@ void TFormula::conversToRevPolNot()
     State state;
     state = q0;
 
-    ICollection<Lexem*>* s = new Stack<Lexem*>;
+    ICollection<Lexem*>* s = new Stack<Lexem*>(maxSizeCollection);
     while (!qN->isEmpty())
     {
         Lexem *l = qN->pop();
@@ -268,7 +272,8 @@ void TFormula::conversToRevPolNot()
 
 int TFormula::calcArithmExp()
 {
-    ICollection<Lexem*>* s = new Stack<Lexem*>;
+    if (!isReadyOutFormula) throw logic_error("the_output_formula_is_not_ready");
+    ICollection<Lexem*>* s = new Stack<Lexem*>(maxSizeCollection);
     Lexem *l;
     while(!qRevPolNot->isEmpty())
     {

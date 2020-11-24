@@ -6,6 +6,8 @@
 
 using namespace std;
 
+const int maxSizeCollection = 1000;
+
 enum TypeElem {VALUE, OPERATION, LP, RP};
 enum State {q0, q1, q2};
 
@@ -29,7 +31,9 @@ public:
 	TFormula(const string& str);
 
 	void init(const string& str);
-	bool getOutFormula(string* s);
+
+	const string& getInpFormula() const;
+	const string& getOutFormula() const;
 
 	void conversToRevPolNot();
 	int calcArithmExp();
