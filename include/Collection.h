@@ -67,9 +67,9 @@ int Queue<T>::next(int i) const
 }
 
 template <class T>
-Queue<T>::Queue(int _n) :n(_n)
+Queue<T>::Queue(int _n) :n(_n + 1)
 {
-	pQueue = new T[n];
+	pQueue = new T[n + 1];
 	first = 0;
 	last = n - 1;
 }
@@ -79,6 +79,7 @@ Queue<T>::Queue(const Queue<T>& q)
 {
 	n = q.n;
 	first = q.first;
+	last = q.last;
 	pQueue = new T[n];
 	for (int i = 0; i < n; i++)
 	{
@@ -105,9 +106,16 @@ template <class T>
 bool Queue<T>::operator==(const Queue<T>& q) const
 {
 	if (n != q.n) return false;
-	if (this->isEmpty() && q.isEmpty()) return true;
-
-
+	Queue<T> tmp1(*this);
+	Queue<T> tmp2(q);
+	T t1, t2;
+	while( !tmp1.isEmpty() && !tmp2.isEmpty())
+	{
+		t1 = tmp1.pop();
+		t2 = tmp2.pop();
+		if (t1 != t2) return false;
+	}
+	if (!tmp1.isEmpty() || !tmp2.isEmpty()) return false;
 
 	return true;
 }
@@ -115,7 +123,7 @@ bool Queue<T>::operator==(const Queue<T>& q) const
 template <class T>
 int Queue<T>::getSize() const
 {
-	return n;
+	return n - 1;
 }
 
 template <class T>

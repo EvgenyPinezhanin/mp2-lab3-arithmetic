@@ -35,7 +35,7 @@ TEST(Stack, can_create_copied_stack)
     ASSERT_NO_THROW(Stack<int> s1(s));
 }
 
-TEST(Stack, copied_stack_is_equal_to_source_one)// Доделать
+TEST(Stack, copied_stack_is_equal_to_source_one)
 {
 	Stack<int> s(10);
     s.push(1);

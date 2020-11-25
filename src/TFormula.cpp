@@ -13,25 +13,27 @@ void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
         c = inpFormula[i];
         if (state == q0)
         {
+            st = c;
             if ((c >= '0') && (c <= '9'))
             {
-                st = c;
                 state = q1;
             }
-            if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
+            else if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
             {
-                st = c;
                 q->push(new Lexem{st,OPERATION});
             }
-            if (c == '(')
+            else if (c == '(')
             {
-                st = c;
                 q->push(new Lexem{st, LP});
             }
-            if (c == ')')
+            else if (c == ')')
             {
-                st = c;
                 q->push(new Lexem{st, RP});
+            }
+            else if (c == ' ') {}
+            else
+            {
+                throw logic_error("arithmetic_expression_is_invalid");
             }
             continue;
         }
@@ -42,29 +44,30 @@ void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
                 st += c;
                 state = q1;
             }
-            if ((c == '+') || (c == '-') || (c == ' ')|| (c == '(') || (c == ')') || (c == '*') || (c == '/'))
+            else 
             {
                 int v = atoi(st.c_str());
                 q->push(new Lexem{st,VALUE, v});
                 state = q0;
-            }
-            if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
-            {
                 st = c;
-                q->push(new Lexem{st,OPERATION});
-                state = q0;
-            }
-            if (c == '(')
-            {
-                st = c;
-                q->push(new Lexem{st, LP});
-                state = q0;
-            }
-            if (c == ')')
-            {
-                st = c;
-                q->push(new Lexem{st, RP});
-                state = q0;
+                if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
+                {
+                    q->push(new Lexem{st,OPERATION});
+                }
+                else if (c == '(')
+                {
+                    q->push(new Lexem{st, LP});
+                }
+                else if (c == ')')
+                {
+                    q->push(new Lexem{st, RP});
+                }
+                else if (c == ' ') {}
+                else
+                {
+                    throw logic_error("arithmetic_expression_is_invalid");
+                }
+                
             }
         }
     }

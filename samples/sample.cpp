@@ -13,16 +13,20 @@ int main()
 	string str;
 	string strOut;
 
+	cout << "Program for translation to Reverse Polish notation\n";
+	cout << "(To finish enter \"exit\")\n";
+
 	while (true)
 	{
+		cout << "Please enter a string: ";
 		getline(cin, str);
 		if (str == "exit") break;
 		f.init(str);
 		f.conversToRevPolNot();
 		strOut = f.getOutFormula();
-		cout << "Обратная польская запись: " << strOut << endl;
+		cout << "Reverse Polish notation: " << strOut << endl;
 		int ans = f.calcArithmExp();
-		cout << "Ответ: " << ans << endl;
+		cout << "Answer: " << ans << endl;
 	}
 	return 0;
 }
