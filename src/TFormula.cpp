@@ -16,11 +16,11 @@ void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
             st = c;
             if ((c >= '0') && (c <= '9'))
             {
-                state = q1;
+                state = q2;
             }
-            else if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
+            else if (c == '-')
             {
-                q->push(new Lexem{st,OPERATION});
+                q->push(new Lexem{st, UNARYOP});
             }
             else if (c == '(')
             {
@@ -28,31 +28,60 @@ void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
             }
             else if (c == ')')
             {
+                state = q2;
                 q->push(new Lexem{st, RP});
             }
             else if (c == ' ') {}
             else
             {
-                throw logic_error("arithmetic_expression_is_invalid");
+                throw logic_error("arithmetic_expression_is_invalid(LexAnalysis)");
             }
             continue;
         }
         if (state == q1)
         {
+            st = c;
+            if ((c >= '0') && (c <= '9'))
+            {
+                state = q2;
+            }
+            else if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
+            {
+                q->push(new Lexem{st, BINARYOP});
+            }
+            else if (c == '(')
+            {
+                state = q0;
+                q->push(new Lexem{st, LP});
+            }
+            else if (c == ')')
+            {
+                state = q1;
+                q->push(new Lexem{st, RP});
+            }
+            else if (c == ' ') {}
+            else
+            {
+                throw logic_error("arithmetic_expression_is_invalid(LexAnalysis)");
+            }
+            continue;
+        }
+        if (state == q2)
+        {
             if ((c >= '0') && (c <= '9'))
             {
                 st += c;
-                state = q1;
+                state = q2;
             }
             else 
             {
                 int v = atoi(st.c_str());
-                q->push(new Lexem{st,VALUE, v});
-                state = q0;
+                q->push(new Lexem{st, VALUE, v});
+                state = q1;
                 st = c;
                 if ((c == '+') || (c == '-') || (c == '*') || (c == '/'))
                 {
-                    q->push(new Lexem{st,OPERATION});
+                    q->push(new Lexem{st, BINARYOP});
                 }
                 else if (c == '(')
                 {
@@ -60,14 +89,14 @@ void TFormula::LexicalAnalysis(ICollection<Lexem*>* q)
                 }
                 else if (c == ')')
                 {
+                    state = q1;
                     q->push(new Lexem{st, RP});
                 }
                 else if (c == ' ') {}
                 else
                 {
-                    throw logic_error("arithmetic_expression_is_invalid");
+                    throw logic_error("arithmetic_expression_is_invalid(LexAnalysis)");
                 }
-                
             }
         }
     }
@@ -82,7 +111,7 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
     while(!qI->isEmpty())
     {
         Lexem *l = qI->pop();
-        if (qI->isEmpty()) state = q2;
+        if (qI->isEmpty()) state = q3;
         if (state == q0){
             if (l->te == LP) {
                 k++;
@@ -91,8 +120,11 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
             if ((l->te == VALUE)) {
                 state = q1;
             }
-            if ((l->te == RP)|| (l->te == OPERATION)) {
-                throw logic_error("arithmetic_expression_is_invalid");
+            if ((l->te == UNARYOP)) {
+                state = q2;
+            }
+            if ((l->te == RP)|| (l->te == BINARYOP)) {
+                throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
             continue;
@@ -100,32 +132,45 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
         if (state == q1){
             if (l->te == RP) {
                 k--;
-                if (k < 0)  throw logic_error("arithmetic_expression_is_invalid");
-                state = q1;
+                if (k < 0)  throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
-            if ((l->te == OPERATION)) {
-                state = q0;
+            if ((l->te == BINARYOP)) {
+                state = q2;
             }
-            if ((l->te == LP)|| (l->te == VALUE)) {
-                throw logic_error("arithmetic_expression_is_invalid");
+            if ((l->te == LP)|| (l->te == UNARYOP)) {
+                throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
             continue;
         }
         if (state == q2){
+            if (l->te == LP) {
+                k++;
+                state = q0;
+            }
+            if ((l->te == VALUE)) {
+                state = q1;
+            }
+            if ((l->te == RP)|| (l->te == BINARYOP)) {
+                throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
+            }
+            qO->push(l);
+            continue;
+        }
+        if (state == q3){
             if (l->te == RP) {
                 k--;
-                if (k < 0)  throw logic_error("arithmetic_expression_is_invalid");
+                if (k < 0)  throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             if ((l->te == VALUE)) {
             }
-            if ((l->te == LP)|| (l->te == OPERATION)) {
-                throw logic_error("arithmetic_expression_is_invalid");
+            if ((l->te == LP) || (l->te == BINARYOP) || (l->te == UNARYOP)) {
+                throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
         }
     }
-    if (k != 0)  throw logic_error("arithmetic_expression_is_invalid");
+    if (k != 0)  throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
 }
 
 TFormula::TFormula()
@@ -196,7 +241,7 @@ void TFormula::conversToRevPolNot()
     while (!qN->isEmpty())
     {
         Lexem *l = qN->pop();
-        if (l->te == LP) {
+        if ((l->te == LP) || (l->te == UNARYOP)) {
             s->push(l);
         }
         if ((l->te == VALUE)) {
@@ -217,14 +262,14 @@ void TFormula::conversToRevPolNot()
                 }
             }
         }
-        if ((l->te == OPERATION)) {
+        if ((l->te == BINARYOP)) {
             Lexem* l1;
             if ((l->s == "+")||(l->s == "-"))
             {
                 while(!s->isEmpty())
                 {
                     l1 = s->pop();
-                    if (l1->te == OPERATION){
+                    if ((l1->te == BINARYOP) || (l1->te == UNARYOP)){
                         qRevPolNot->push(l1);
                         outFormula += l1->s;
                     }
@@ -239,9 +284,8 @@ void TFormula::conversToRevPolNot()
             {
                 while(!s->isEmpty())
                 {
-
                     l1 = s->pop();
-                    if (l1->te == OPERATION){
+                    if (l1->te == BINARYOP){
                         if ((l1->s == "*")||(l1->s == "/")){
                             qRevPolNot->push(l1);
                             outFormula += l1->s;
@@ -252,6 +296,10 @@ void TFormula::conversToRevPolNot()
                             break;
                         }
                         
+                    }
+                    else if (l1->te == UNARYOP) {
+                        qRevPolNot->push(l1);
+                        outFormula += l1->s;
                     }
                     else
                     {
@@ -285,7 +333,15 @@ int TFormula::calcArithmExp()
         {
             s->push(l);
         }
-        if (l->te == OPERATION)
+        if (l->te == UNARYOP)
+        {
+            Lexem* l;
+            int k;
+            l = s->pop();
+            k = -l->val;
+            s->push(new Lexem{to_string(k),VALUE, k});
+        }
+        if (l->te == BINARYOP)
         {
             Lexem* l1;
             Lexem* l2;
@@ -319,7 +375,6 @@ int TFormula::calcArithmExp()
                 s->push(new Lexem{to_string(k),VALUE, k});
             }
         }
-
     }
 	return s->pop()->val;
 }

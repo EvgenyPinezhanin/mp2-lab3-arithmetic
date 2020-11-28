@@ -18,6 +18,16 @@ TEST(Queue, created_queue_is_empty)
     EXPECT_EQ(true, q.isEmpty());
 }
 
+TEST(Queue, isFull_filled_stack_return_true)
+{
+    Stack<int> q(5);
+    for (int i = 0; i < 5; i++)
+    {
+        q.push(3);
+    }
+    EXPECT_EQ(true, q.isFull());
+}
+
 TEST(Queue, can_create_copied_queue)
 {
     Queue<int> q(10);
@@ -84,6 +94,19 @@ TEST(Queue, compare_equal_queues_return_true)
     Queue<int> q1(q);
 
 	EXPECT_EQ(true, q == q1);
+}
+
+TEST(Queue, compare_not_equal_queues_return_false)
+{
+	Queue<int> q(7);
+    q.push(1);
+    q.push(3);
+    q.push(4);
+    Queue<int> q1(7);
+	q.push(6);
+    q.push(8);
+
+	EXPECT_NE(true, q == q1);
 }
 
 TEST(Queue, compare_queue_with_itself_return_true)

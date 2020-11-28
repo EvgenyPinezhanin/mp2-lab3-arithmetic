@@ -8,8 +8,8 @@ using namespace std;
 
 const int maxSizeCollection = 1000;
 
-enum TypeElem {VALUE, OPERATION, LP, RP};
-enum State {q0, q1, q2};
+enum TypeElem {VALUE, UNARYOP, BINARYOP, LP, RP};
+enum State {q0, q1, q2, q3};
 
 struct Lexem {
 	string s;

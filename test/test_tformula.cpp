@@ -65,6 +65,44 @@ TEST(TFormula, can_convert_arithmetic_expression_to_reverse_polish_notation)
     EXPECT_EQ(strOut, f.getOutFormula());
 }
 
+TEST(TFormula, the_lexical_analyzer_removes_extra_spaces)
+{
+    string str = "1 +  2  ";
+    string strOut = "1 2 +";
+    TFormula f(str);
+    f.conversToRevPolNot();
+
+    EXPECT_EQ(strOut, f.getOutFormula());
+}
+
+TEST(TFormula, throws_when_input_arithmetic_expression_with_unknown_characters)
+{
+    string str = "1апв+2";
+    TFormula f(str);
+
+    ASSERT_ANY_THROW(f.conversToRevPolNot());
+}
+
+TEST(TFormula, can_convert_arithmetic_expression_with_unary_minus_to_reverse_polish_notation)
+{
+    string str = "-(1+2)";
+    string strOut = "1 2 +-";
+    TFormula f(str);
+    f.conversToRevPolNot();
+
+    EXPECT_EQ(strOut, f.getOutFormula());
+}
+
+TEST(TFormula, can_convert_arithmetic_expression_with_two_digit_and_multi_digit_numbers_to_reverse_polish_notation)
+{
+    string str = "123+25";
+    string strOut = "123 25 +";
+    TFormula f(str);
+    f.conversToRevPolNot();
+
+    EXPECT_EQ(strOut, f.getOutFormula());
+}
+
 TEST(TFormula, can_convert_difficult_arithmetic_expression_to_reverse_polish_notation)
 {
     string str = "(1+2*(4+25))+(45*34/(13+4))";

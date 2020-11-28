@@ -106,16 +106,19 @@ template <class T>
 bool Queue<T>::operator==(const Queue<T>& q) const
 {
 	if (n != q.n) return false;
-	Queue<T> tmp1(*this);
-	Queue<T> tmp2(q);
-	T t1, t2;
-	while( !tmp1.isEmpty() && !tmp2.isEmpty())
+	if (isEmpty() && q.isEmpty()) return true;
+	if (!isEmpty() && q.isEmpty()) return false;
+	if (isEmpty() && !q.isEmpty()) return false;
+
+	int ind1 = first;
+	int ind2 = q.first;
+	while((ind1 != last) && (ind1 != q.last))
 	{
-		t1 = tmp1.pop();
-		t2 = tmp2.pop();
-		if (t1 != t2) return false;
+		if (pQueue[ind1] != q.pQueue[ind1]) return false;
+		ind1++;
+		ind2++;
 	}
-	if (!tmp1.isEmpty() || !tmp2.isEmpty()) return false;
+	if ((ind1 != last) || (ind1 != q.last)) return false;
 
 	return true;
 }
@@ -194,16 +197,11 @@ template <class T>
 bool Stack<T>::operator==(const Stack<T>& s) const
 {
 	if (n != s.n) return false;
-	Stack<T> tmp1(*this);
-	Stack<T> tmp2(s);
-	T t1, t2;
-	while( !tmp1.isEmpty() && !tmp2.isEmpty())
+	if (top != s.top) return false;
+	for (int i = 0; i < top; i++)
 	{
-		t1 = tmp1.pop();
-		t2 = tmp2.pop();
-		if (t1 != t2) return false;
+		if (pStack[i] != s.pStack[i]) return false;
 	}
-	if (!tmp1.isEmpty() || !tmp2.isEmpty()) return false;
 	return true;
 }
 

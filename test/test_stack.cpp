@@ -97,6 +97,19 @@ TEST(Stack, compare_equal_stacks_return_true)
 	EXPECT_EQ(true, s == s1);
 }
 
+TEST(Stack, compare_not_equal_stacks_return_false)
+{
+	Stack<int> s(7);
+    s.push(1);
+    s.push(3);
+    s.push(4);
+    Stack<int> s1(7);
+    s.push(7);
+    s.push(9);
+
+	EXPECT_NE(true, s == s1);
+}
+
 TEST(Stack, compare_stack_with_itself_return_true)
 {
 	Stack<int> s(7);
