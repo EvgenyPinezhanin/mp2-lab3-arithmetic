@@ -123,7 +123,7 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
             if ((l->te == UNARYOP)) {
                 state = q2;
             }
-            if ((l->te == RP)|| (l->te == BINARYOP)) {
+            if ((l->te == RP) || (l->te == BINARYOP)) {
                 throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
@@ -137,7 +137,7 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
             if ((l->te == BINARYOP)) {
                 state = q2;
             }
-            if ((l->te == LP)|| (l->te == UNARYOP)) {
+            if ((l->te == LP)|| (l->te == UNARYOP) || (l->te == VALUE)) {
                 throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
@@ -151,7 +151,7 @@ void TFormula::SyntacticAnalysis(ICollection<Lexem*>* qI, ICollection<Lexem*>* q
             if ((l->te == VALUE)) {
                 state = q1;
             }
-            if ((l->te == RP)|| (l->te == BINARYOP)) {
+            if ((l->te == RP) || (l->te == BINARYOP) || (l->te == UNARYOP)) {
                 throw logic_error("arithmetic_expression_is_invalid(SynAnalysis)");
             }
             qO->push(l);
@@ -319,6 +319,9 @@ void TFormula::conversToRevPolNot()
         outFormula += l->s;
     }
     isReadyOutFormula = true;
+	delete q;
+	delete qN;
+	delete s;
 }
 
 int TFormula::calcArithmExp()

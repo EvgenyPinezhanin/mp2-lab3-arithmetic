@@ -8,12 +8,14 @@ using namespace std;
 template <class T>
 class ICollection {
 public:
+	virtual ~ICollection() {};
 	virtual int getSize() const = 0;
 
 	virtual void push(const T& v) = 0;
 	virtual T& pop() = 0;
 	virtual bool isEmpty() const = 0;
 	virtual bool isFull() const = 0;
+
 };
 
 template <class T>
@@ -27,6 +29,7 @@ public:
 	Queue(int _n = 100);
 	Queue(const Queue<T>& q);
 	Queue<T>& operator=(const Queue<T>& q);
+	~Queue();
 
 	bool operator==(const Queue<T>& q) const;
 
@@ -48,6 +51,7 @@ public:
 	Stack(int _n = 100);
 	Stack(const Stack<T>& s);
 	Stack<T>& operator=(const Stack<T>& s);
+	~Stack();
 
 	bool operator==(const Stack<T>& q) const;
 
@@ -100,6 +104,12 @@ Queue<T>& Queue<T>::operator=(const Queue<T>& q)
 		pQueue[i] = q.pQueue[i];
 	}
 	return *this;
+}
+
+template<class T>
+Queue<T>::~Queue()
+{
+	delete pQueue;
 }
 
 template <class T>
@@ -191,6 +201,12 @@ Stack<T>& Stack<T>::operator=(const Stack<T>& s)
 		pStack[i] = s.pStack[i];
 	}
 	return *this;
+}
+
+template<class T>
+inline Stack<T>::~Stack()
+{
+	delete pStack;
 }
 
 template <class T>

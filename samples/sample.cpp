@@ -8,9 +8,9 @@ using namespace std;
 int main()
 {
 	TFormula f;
-	string str = "(1+2*(4+25))+(45*34/(13+4))";
+	//string str = "(1+2*(4+25))+(45*34/(13+4))";
 	//string str = "(145+22*450/(41 + 49))*(45/9)+3947";
-	//string str;
+	string str;
 	string strOut;
 
 	cout << "Program for translation to Reverse Polish notation\n";

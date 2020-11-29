@@ -1,7 +1,7 @@
 #pragma once
 
 #include<iostream>
-#include<cstring>
+#include<string>
 #include<Collection.h>
 
 using namespace std;
