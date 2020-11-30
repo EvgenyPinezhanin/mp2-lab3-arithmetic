@@ -379,5 +379,7 @@ int TFormula::calcArithmExp()
             }
         }
     }
-	return s->pop()->val;
+	int ans = s->pop()->val;
+	delete s;
+	return ans;
 }

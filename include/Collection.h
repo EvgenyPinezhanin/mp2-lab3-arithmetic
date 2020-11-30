@@ -109,7 +109,7 @@ Queue<T>& Queue<T>::operator=(const Queue<T>& q)
 template<class T>
 Queue<T>::~Queue()
 {
-	delete pQueue;
+	delete[] pQueue;
 }
 
 template <class T>
@@ -206,7 +206,7 @@ Stack<T>& Stack<T>::operator=(const Stack<T>& s)
 template<class T>
 inline Stack<T>::~Stack()
 {
-	delete pStack;
+	delete[] pStack;
 }
 
 template <class T>
