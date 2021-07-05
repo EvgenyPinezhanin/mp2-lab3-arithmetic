@@ -65,6 +65,67 @@ TEST(TFormula, can_convert_arithmetic_expression_to_reverse_polish_notation)
     EXPECT_EQ(strOut, f.getOutFormula());
 }
 
+TEST(TFormula, can_convert_arithmetic_expression_with_variables_to_reverse_polish_notation)
+{
+    string str = "1+2*x";
+    string strOut = "1 2 x *+";
+    TFormula f(str);
+    int ans = 11;
+    f.conversToRevPolNot();
+    cin.putback(' ');
+    cin.putback('5');
+    f.setVars();
+    EXPECT_EQ(ans, f.calcArithmExp());
+}
+
+TEST(TFormula, can_omit_the_multiplication_sign_when_using_variables_1)
+{
+    string str = "1+2xy";
+    string strOut = "1 2 x *y *+";
+    TFormula f(str);
+    int ans = 51;
+    f.conversToRevPolNot();
+    cin.putback(' ');
+    cin.putback('5');
+    cin.putback(' ');
+    cin.putback('5');
+    f.setVars();
+
+    EXPECT_EQ(ans, f.calcArithmExp());
+}
+
+TEST(TFormula, can_omit_the_multiplication_sign_when_using_variables_2)
+{
+    string str = "1+2x(3+xy)";
+    string strOut = "1 2 x *3 x y *+*+";
+    TFormula f(str);
+    int ans = 281;
+    f.conversToRevPolNot();
+    cin.putback(' ');
+    cin.putback('5');
+    cin.putback(' ');
+    cin.putback('5');
+    f.setVars();
+
+    EXPECT_EQ(ans, f.calcArithmExp());
+}
+
+TEST(TFormula, can_convert_arithmetic_expression_with_exponentiation_to_reverse_polish_notation)
+{
+    string str = "1+x^(4+y)";
+    string strOut = "1 x 4 y +^+";
+    TFormula f(str);
+    int ans = 1953126;
+    f.conversToRevPolNot();
+    cin.putback(' ');
+    cin.putback('5');
+    cin.putback(' ');
+    cin.putback('5');
+    f.setVars();
+
+    EXPECT_EQ(ans, f.calcArithmExp());
+}
+
 TEST(TFormula, the_lexical_analyzer_removes_extra_spaces)
 {
     string str = "1 +  2  ";
@@ -143,5 +204,3 @@ TEST(TFormula, cant_calculate_an_expression_in_postfix_form_if_it_not_ready)
     TFormula f(str);
     ASSERT_ANY_THROW(f.calcArithmExp());
 }
-
-
